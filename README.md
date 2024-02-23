@@ -2,7 +2,7 @@
 ## Introduction
 
 This is a proof-of-concept to demonstrate how a ReactJS Web component can be shared between a ReactJS Web application and a native C++ application.
-The interface that separates the shared component from the applications that embed the component is in pure JavaScript/TypeScript. So the presented method could be applied to any other Web frameworks as well.
+The interface that separates the shared component from the applications is in pure JavaScript/TypeScript. So the method could be applied to any other Web frameworks as well.
 
 ## Components
 
