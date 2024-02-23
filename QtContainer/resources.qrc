@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>index.html</file>
+        <file>style.css</file>
+        <file>client-bundle.js</file>
+    </qresource>
+</RCC>

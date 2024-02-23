@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="UTF-8">
+  <title>Test ClientApp</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script
+      src="https://unpkg.com/@mui/material@5.15.10/umd/material-ui.development.js"
+      crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <p><strong>Container</strong></p>
+    <button onclick="sendEventToClient()">Send event to the client</button>
+    <div class="container">
+      <div class="child">
+        <div id="root"></div>
+      </div>
+    </div>
+  </main>
+
+  <script src="client-bundle.js"></script>
+  <script>
+'use strict';
+
+let listeners = [];
+const containerApi = {
+  load() {
+    return Promise.resolve({test: 42});
+  },
+
+  addEventListener(fn) {
+    listeners.push(fn);
+  },
+  removeEventListener(fn) {
+    listeners.splice(listeners.indexOf(fn), 1);
+  }
+};
+globalThis.ClientUiFactory.create(document.getElementById("root"), containerApi);
+
+function sendEventToClient() {
+  for (let fn of listeners) {
+    fn("test_event");
+  }
+}
+
+    </script>
+</body>

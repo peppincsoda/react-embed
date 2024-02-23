@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script
+        src="https://unpkg.com/@mui/material@5.15.10/umd/material-ui.development.js"
+        crossorigin="anonymous"></script>
+
+    <script src="qrc:///client-bundle.js"></script>
+    <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
+
+    <link rel="stylesheet" href="qrc:///style.css">
+</head>
+<body>
+    <main>
+      <div class="container">
+        <div class="child">
+          <div id="root"></div>
+        </div>
+      </div>
+    </main>
+
+<script>
+
+'use strict';
+
+// ContainerApi implementation that forwards requests to/from the web channel
+class WebChannelContainerApi {
+  constructor(containerApi) { // Parameter is the containerApi instance exposed by WebChannel from Qt code
+    this.containerApi = containerApi;
+    this.listeners = [];
+
+    this.containerApi.onEvent.connect(this.onEvent.bind(this));
+  }
+
+  async load() {
+    return new Promise((resolve) => {
+      this.containerApi.onLoadReady.connect(resolve);
+      this.containerApi.asyncLoad();
+    });
+  }
+
+  addEventListener(fn) {
+    this.listeners.push(fn);
+  }
+
+  removeEventListener(fn) {
+    this.listeners.splice(this.listeners.indexOf(fn), 1);
+  }
+
+  onEvent(event_type) {
+    for (const fn of this.listeners) {
+      fn(event_type);
+    }
+  }
+}
+
+// Connect to the WebSocket server and wrap the socket into a web channel
+window.onload = function() {
+  const socket = new WebSocket("ws://127.0.0.1:29999");
+
+  socket.onclose = function() {
+    console.error("web channel closed");
+  };
+  socket.onerror = function(error) {
+    console.error("web channel error: " + error);
+  };
+  socket.onopen = function() {
+    window.channel = new QWebChannel(socket);
+
+    setTimeout(() => {
+        // Wait until the next iteration for containerApi to appear in "objects"
+        const containerApi = new WebChannelContainerApi(window.channel.objects.containerApi);
+        globalThis.ClientUiFactory.create(document.getElementById("root"), containerApi);
+    }, 0);
+  }
+}
+
+</script>
+
+</body>
+</html>

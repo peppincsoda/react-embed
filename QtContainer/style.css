@@ -1,0 +1,20 @@
+:root {
+  --bgColor: #A0A0A0;
+}
+
+html, body {
+  background-color: var(--bgColor);
+}
+
+.container {
+  border: 2px dashed;
+  border-radius: 5px;
+}
+
+.child {
+  margin: 12px;
+}
+
+button {
+  margin: 12px;
+}
